@@ -1,0 +1,5 @@
+{
+  "name": "Geometría interactiva",
+  "description": "Aplicación interactiva para aprender sobre perímetro, área y volumen, con un simulador 3D de prismas.",
+  "requestFramePermissions": []
+}
