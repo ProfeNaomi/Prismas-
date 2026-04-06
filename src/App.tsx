@@ -10,6 +10,8 @@ import Tab1Definitions from './components/Tab1Definitions';
 import Tab2Figures from './components/Tab2Figures';
 import Tab3Prisms from './components/Tab3Prisms';
 import Tab4Simulator from './components/Tab4Simulator';
+import Tab5Nets from './components/Tab5Nets';
+import { Layers } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(0);
@@ -19,6 +21,7 @@ export default function App() {
     { id: 1, label: 'Figuras 2D', icon: Shapes, component: Tab2Figures },
     { id: 2, label: 'Prismas', icon: Box, component: Tab3Prisms },
     { id: 3, label: 'Simulador 3D', icon: Cuboid, component: Tab4Simulator },
+    { id: 4, label: 'Mallas 3D', icon: Layers, component: Tab5Nets },
   ];
 
   const ActiveComponent = tabs[activeTab].component;
