@@ -266,11 +266,11 @@ function AnimatedNet({ baseType, dimA, dimB, height, progress }: { baseType: Bas
         {/* Face 1 (Middle/First) */}
         <Face width={w} height={h} color={lateralColor}>
           {/* Top Base */}
-          <group position={[0, h, 0]} rotation={[-progress * Math.PI/2, 0, 0]}>
+          <group position={[0, h, 0]} rotation={[progress * Math.PI/2, 0, 0]}>
             <Face width={w} height={w} color={baseColor} isBase />
           </group>
           {/* Bottom Base */}
-          <group position={[0, 0, 0]} rotation={[progress * Math.PI/2, 0, 0]}>
+          <group position={[0, 0, 0]} rotation={[-progress * Math.PI/2, 0, 0]}>
             <group position={[0, -w, 0]}>
               <Face width={w} height={w} color={baseColor} isBase />
             </group>
@@ -304,11 +304,11 @@ function AnimatedNet({ baseType, dimA, dimB, height, progress }: { baseType: Bas
         {/* Face 1 (dimA) */}
         <Face width={dimA} height={h} color={lateralColor}>
           {/* Top Base */}
-          <group position={[0, h, 0]} rotation={[-progress * Math.PI/2, 0, 0]}>
+          <group position={[0, h, 0]} rotation={[progress * Math.PI/2, 0, 0]}>
             <Face width={dimA} height={dimB} color={baseColor} isBase />
           </group>
           {/* Bottom Base */}
-          <group position={[0, 0, 0]} rotation={[progress * Math.PI/2, 0, 0]}>
+          <group position={[0, 0, 0]} rotation={[-progress * Math.PI/2, 0, 0]}>
             <group position={[0, -dimB, 0]}>
               <Face width={dimA} height={dimB} color={baseColor} isBase />
             </group>
@@ -344,11 +344,11 @@ function AnimatedNet({ baseType, dimA, dimB, height, progress }: { baseType: Bas
       <group position={[centerOffsetX, centerOffsetY, 0]}>
         <Face width={w} height={h} color={lateralColor}>
           {/* Top Base */}
-          <group position={[0, h, 0]} rotation={[-progress * Math.PI/2, 0, 0]}>
+          <group position={[0, h, 0]} rotation={[progress * Math.PI/2, 0, 0]}>
              <TriangleFace side={w} color={baseColor} isBase />
           </group>
           {/* Bottom Base - point downwards */}
-          <group position={[w, 0, 0]} rotation={[progress * Math.PI/2, 0, Math.PI]}>
+          <group position={[w, 0, 0]} rotation={[-progress * Math.PI/2, 0, Math.PI]}>
              <TriangleFace side={w} color={baseColor} isBase />
           </group>
 
@@ -390,7 +390,7 @@ function AnimatedNet({ baseType, dimA, dimB, height, progress }: { baseType: Bas
             <>
               {/* Top Base */}
               <group position={[w/2, h + dimA, 0]}>
-                <group position={[0, -dimA, 0]} rotation={[-progress * Math.PI/2, 0, 0]}>
+                <group position={[0, -dimA, 0]} rotation={[progress * Math.PI/2, 0, 0]}>
                   <group position={[0, dimA, 0]}>
                     <CircleFace radius={dimA} color={baseColor} isBase />
                   </group>
@@ -398,7 +398,7 @@ function AnimatedNet({ baseType, dimA, dimB, height, progress }: { baseType: Bas
               </group>
               {/* Bottom Base */}
                <group position={[w/2, -dimA, 0]}>
-                <group position={[0, dimA, 0]} rotation={[progress * Math.PI/2, 0, 0]}>
+                <group position={[0, dimA, 0]} rotation={[-progress * Math.PI/2, 0, 0]}>
                   <group position={[0, -dimA, 0]}>
                     <CircleFace radius={dimA} color={baseColor} isBase />
                   </group>
