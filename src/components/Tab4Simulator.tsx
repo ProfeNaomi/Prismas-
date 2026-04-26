@@ -3,9 +3,8 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Grid, Edges } from '@react-three/drei';
 import * as THREE from 'three';
 import { Card, CardContent } from './ui/Card';
-import { Button } from './ui/Button';
 
-type BaseType = 'square' | 'rectangle' | 'triangle' | 'trapezoid';
+type BaseType = 'square' | 'rectangle' | 'triangle' | 'trapezoid' | 'cylinder' | 'cone' | 'pyramid_square';
 type Mode = 'discrete' | 'continuous';
 
 export default function Tab4Simulator() {
@@ -14,7 +13,7 @@ export default function Tab4Simulator() {
   const [height, setHeight] = useState<number>(0);
   
   // Dimensions
-  const [dimA, setDimA] = useState<number>(4); // Square side, Rect width, Tri base, Trap base1
+  const [dimA, setDimA] = useState<number>(4); // Square side, Rect width, Tri base, Trap base1, Cylinder/Cone Radius
   const [dimB, setDimB] = useState<number>(4); // Rect depth, Tri height, Trap base2
   const [dimC, setDimC] = useState<number>(4); // Trap height
 
@@ -25,13 +24,21 @@ export default function Tab4Simulator() {
       case 'rectangle': return dimA * dimB;
       case 'triangle': return (dimA * dimB) / 2;
       case 'trapezoid': return ((dimA + dimB) * dimC) / 2;
+      case 'cylinder': return Math.PI * dimA * dimA;
+      case 'cone': return Math.PI * dimA * dimA;
+      case 'pyramid_square': return dimA * dimA;
       default: return 0;
     }
   }, [baseType, dimA, dimB, dimC]);
 
   // Calculate Volume
   const currentHeight = mode === 'discrete' ? Math.floor(height) : height;
-  const volume = baseArea * currentHeight;
+  const volume = useMemo(() => {
+    if (baseType === 'cone' || baseType === 'pyramid_square') {
+      return (baseArea * currentHeight) / 3;
+    }
+    return baseArea * currentHeight;
+  }, [baseType, baseArea, currentHeight]);
 
   return (
     <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 h-[calc(100vh-12rem)] min-h-[600px] animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -43,36 +50,51 @@ export default function Tab4Simulator() {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Forma de la Base</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Cuerpo Geométrico</label>
                 <select 
                   className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={baseType}
                   onChange={(e) => setBaseType(e.target.value as BaseType)}
                 >
-                  <option value="square">Cuadrado</option>
-                  <option value="rectangle">Rectángulo</option>
-                  <option value="triangle">Triángulo</option>
-                  <option value="trapezoid">Trapecio</option>
+                  <optgroup label="Prismas">
+                    <option value="square">Prisma Cuadrado</option>
+                    <option value="rectangle">Prisma Rectangular</option>
+                    <option value="triangle">Prisma Triangular</option>
+                    <option value="trapezoid">Prisma Trapezoidal</option>
+                  </optgroup>
+                  <optgroup label="Cuerpos Redondos">
+                    <option value="cylinder">Cilindro</option>
+                    <option value="cone">Cono</option>
+                  </optgroup>
+                  <optgroup label="Pirámides">
+                    <option value="pyramid_square">Pirámide Cuadrada</option>
+                  </optgroup>
                 </select>
               </div>
 
               {/* Dimensions Inputs */}
               <div className="space-y-3 bg-slate-50 p-4 rounded-lg border border-slate-100">
-                {baseType === 'square' && (
+                {(baseType === 'square' || baseType === 'pyramid_square') && (
                   <div>
-                    <label className="block text-xs font-medium text-slate-500 mb-1">Lado (m)</label>
-                    <input type="number" min="1" max="10" value={dimA} onChange={e => setDimA(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
+                    <label className="block text-xs font-medium text-slate-500 mb-1">Lado basal (m)</label>
+                    <input type="number" min="1" max="100" value={dimA} onChange={e => setDimA(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
+                  </div>
+                )}
+                {(baseType === 'cylinder' || baseType === 'cone') && (
+                  <div>
+                    <label className="block text-xs font-medium text-slate-500 mb-1">Radio basal (r)</label>
+                    <input type="number" min="1" max="100" value={dimA} onChange={e => setDimA(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
                   </div>
                 )}
                 {baseType === 'rectangle' && (
                   <>
                     <div>
                       <label className="block text-xs font-medium text-slate-500 mb-1">Ancho (m)</label>
-                      <input type="number" min="1" max="10" value={dimA} onChange={e => setDimA(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
+                      <input type="number" min="1" max="100" value={dimA} onChange={e => setDimA(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-slate-500 mb-1">Largo (m)</label>
-                      <input type="number" min="1" max="10" value={dimB} onChange={e => setDimB(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
+                      <input type="number" min="1" max="100" value={dimB} onChange={e => setDimB(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
                     </div>
                   </>
                 )}
@@ -80,11 +102,11 @@ export default function Tab4Simulator() {
                   <>
                     <div>
                       <label className="block text-xs font-medium text-slate-500 mb-1">Base (m)</label>
-                      <input type="number" min="1" max="10" value={dimA} onChange={e => setDimA(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
+                      <input type="number" min="1" max="100" value={dimA} onChange={e => setDimA(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-500 mb-1">Altura (m)</label>
-                      <input type="number" min="1" max="10" value={dimB} onChange={e => setDimB(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
+                      <label className="block text-xs font-medium text-slate-500 mb-1">Altura del triángulo (m)</label>
+                      <input type="number" min="1" max="100" value={dimB} onChange={e => setDimB(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
                     </div>
                   </>
                 )}
@@ -92,15 +114,15 @@ export default function Tab4Simulator() {
                   <>
                     <div>
                       <label className="block text-xs font-medium text-slate-500 mb-1">Base Mayor (m)</label>
-                      <input type="number" min="1" max="10" value={dimA} onChange={e => setDimA(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
+                      <input type="number" min="1" max="100" value={dimA} onChange={e => setDimA(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-slate-500 mb-1">Base Menor (m)</label>
-                      <input type="number" min="1" max="10" value={dimB} onChange={e => setDimB(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
+                      <input type="number" min="1" max="100" value={dimB} onChange={e => setDimB(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-500 mb-1">Altura (m)</label>
-                      <input type="number" min="1" max="10" value={dimC} onChange={e => setDimC(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
+                      <label className="block text-xs font-medium text-slate-500 mb-1">Altura del trapecio (m)</label>
+                      <input type="number" min="1" max="100" value={dimC} onChange={e => setDimC(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
                     </div>
                   </>
                 )}
@@ -129,14 +151,14 @@ export default function Tab4Simulator() {
               <div>
                 <div className="flex justify-between mb-1">
                   <label className="block text-sm font-medium text-slate-700">
-                    {mode === 'discrete' ? 'Pisos' : 'Altura'}
+                    {mode === 'discrete' ? 'Pisos' : 'Altura del Cuerpo (h)'}
                   </label>
                   <span className="text-sm font-bold text-blue-600">{currentHeight.toFixed(mode === 'continuous' ? 1 : 0)}</span>
                 </div>
                 <input 
                   type="range" 
                   min="0" 
-                  max="10" 
+                  max="100" 
                   step={mode === 'discrete' ? 1 : 0.1}
                   value={height} 
                   onChange={e => setHeight(Number(e.target.value))} 
@@ -168,13 +190,13 @@ export default function Tab4Simulator() {
         <div className="absolute top-4 left-4 z-10 bg-black/50 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-medium border border-white/10">
           Arrastra para rotar • Scroll para zoom
         </div>
-        <Canvas camera={{ position: [10, 10, 10], fov: 45 }}>
+        <Canvas camera={{ position: [20, 20, 20], fov: 45 }}>
           <color attach="background" args={['#0f172a']} />
           <ambientLight intensity={0.5} />
-          <directionalLight position={[10, 20, 10]} intensity={1} castShadow />
-          <directionalLight position={[-10, 10, -10]} intensity={0.5} />
+          <directionalLight position={[20, 40, 20]} intensity={1} castShadow />
+          <directionalLight position={[-20, 20, -20]} intensity={0.5} />
           
-          <Grid infiniteGrid fadeDistance={50} sectionColor="#334155" cellColor="#1e293b" />
+          <Grid infiniteGrid fadeDistance={200} sectionColor="#334155" cellColor="#1e293b" />
           
           <PrismMesh 
             baseType={baseType} 
@@ -192,35 +214,105 @@ export default function Tab4Simulator() {
   );
 }
 
-// 3D Component for the Prism
+// 3D Component for the Shapes
 function PrismMesh({ baseType, dimA, dimB, dimC, height, mode }: { baseType: BaseType, dimA: number, dimB: number, dimC: number, height: number, mode: Mode }) {
-  // If height is 0, we just show the base on the floor
   const isFloorZero = height === 0;
   
-  // For discrete square/rectangle, we can render individual cubes
+  const material = mode === 'continuous' 
+    ? <meshPhysicalMaterial color="#0ea5e9" transparent opacity={0.7} roughness={0.1} transmission={0.9} thickness={1} />
+    : <meshStandardMaterial color="#3b82f6" roughness={0.2} metalness={0.1} />;
+
+  // Cylinders, Cones, Pyramids using standard Geometries
+  if (baseType === 'cylinder') {
+    return (
+      <group>
+        {!isFloorZero && (
+          <mesh position={[0, height/2 + 0.01, 0]}>
+            <cylinderGeometry args={[dimA, dimA, height, 32]} />
+            {material}
+            <Edges threshold={15} color={mode === 'continuous' ? "#0284c7" : "#1e3a8a"} />
+          </mesh>
+        )}
+        <mesh position={[0, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[dimA, 32]} />
+          <meshBasicMaterial color={isFloorZero ? "#3b82f6" : "#1e3a8a"} transparent opacity={isFloorZero ? 0.8 : 0.3} side={THREE.DoubleSide} />
+          <Edges color="#60a5fa" />
+        </mesh>
+      </group>
+    );
+  }
+
+  if (baseType === 'cone') {
+    return (
+      <group>
+        {!isFloorZero && (
+          <mesh position={[0, height/2 + 0.01, 0]}>
+            <coneGeometry args={[dimA, height, 32]} />
+            {material}
+            <Edges threshold={15} color={mode === 'continuous' ? "#0284c7" : "#1e3a8a"} />
+          </mesh>
+        )}
+        <mesh position={[0, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[dimA, 32]} />
+          <meshBasicMaterial color={isFloorZero ? "#3b82f6" : "#1e3a8a"} transparent opacity={isFloorZero ? 0.8 : 0.3} side={THREE.DoubleSide} />
+          <Edges color="#60a5fa" />
+        </mesh>
+      </group>
+    );
+  }
+
+  if (baseType === 'pyramid_square') {
+    return (
+      <group>
+        {!isFloorZero && (
+          <mesh position={[0, height/2 + 0.01, 0]} rotation={[0, Math.PI/4, 0]}>
+            <cylinderGeometry args={[0, dimA * Math.SQRT1_2, height, 4]} />
+            {material}
+            <Edges threshold={15} color={mode === 'continuous' ? "#0284c7" : "#1e3a8a"} />
+          </mesh>
+        )}
+        <mesh position={[0, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[dimA, dimA]} />
+          <meshBasicMaterial color={isFloorZero ? "#3b82f6" : "#1e3a8a"} transparent opacity={isFloorZero ? 0.8 : 0.3} side={THREE.DoubleSide} />
+          <Edges color="#60a5fa" />
+        </mesh>
+      </group>
+    );
+  }
+
+  // Discrete Cubes for Square and Rectangle Prisms
   if (mode === 'discrete' && !isFloorZero && (baseType === 'square' || baseType === 'rectangle')) {
     const width = dimA;
     const depth = baseType === 'square' ? dimA : dimB;
     const cubes = [];
     
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        for (let z = 0; z < depth; z++) {
-          cubes.push(
-            <mesh key={`${x}-${y}-${z}`} position={[x - width/2 + 0.5, y + 0.5, z - depth/2 + 0.5]}>
-              <boxGeometry args={[0.95, 0.95, 0.95]} />
-              <meshStandardMaterial color="#3b82f6" roughness={0.2} metalness={0.1} />
-              <Edges scale={1.05} threshold={15} color="#1d4ed8" />
-            </mesh>
-          );
+    // To prevent overwhelming rendering if sizes are huge, we cap cubes
+    if (width * depth * height < 5000) {
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            for (let z = 0; z < depth; z++) {
+              cubes.push(
+                <mesh key={`${x}-${y}-${z}`} position={[x - width/2 + 0.5, y + 0.5, z - depth/2 + 0.5]}>
+                  <boxGeometry args={[0.95, 0.95, 0.95]} />
+                  <meshStandardMaterial color="#3b82f6" roughness={0.2} metalness={0.1} />
+                  <Edges scale={1.05} threshold={15} color="#1d4ed8" />
+                </mesh>
+              );
+            }
+          }
         }
-      }
     }
     
-    // Also render the base outline
     return (
       <group>
-        {cubes}
+        {cubes.length > 0 ? cubes : (
+            // Fallback to solid if too many cubes
+            <mesh position={[0, height/2, 0]}>
+              <boxGeometry args={[width, height, depth]} />
+              <meshStandardMaterial color="#3b82f6" roughness={0.2} metalness={0.1} />
+              <Edges scale={1.0} threshold={15} color="#1d4ed8" />
+            </mesh>
+        )}
         <mesh position={[0, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[width, depth]} />
           <meshBasicMaterial color="#1e3a8a" transparent opacity={0.5} side={THREE.DoubleSide} />
@@ -230,7 +322,7 @@ function PrismMesh({ baseType, dimA, dimB, dimC, height, mode }: { baseType: Bas
     );
   }
 
-  // For continuous mode, or non-rectangular discrete mode, we use ExtrudeGeometry
+  // For continuous mode Prisms, use ExtrudeGeometry
   const shape = useMemo(() => {
     const s = new THREE.Shape();
     if (baseType === 'square') {
@@ -269,17 +361,12 @@ function PrismMesh({ baseType, dimA, dimB, dimC, height, mode }: { baseType: Bas
   }, [baseType, dimA, dimB, dimC]);
 
   const extrudeSettings = {
-    depth: Math.max(height, 0.001), // Prevent 0 depth error
+    depth: Math.max(height, 0.001),
     bevelEnabled: false,
   };
 
-  const material = mode === 'continuous' 
-    ? <meshPhysicalMaterial color="#0ea5e9" transparent opacity={0.7} roughness={0.1} transmission={0.9} thickness={1} />
-    : <meshStandardMaterial color="#3b82f6" roughness={0.2} metalness={0.1} />;
-
   return (
     <group>
-      {/* The extruded shape */}
       {!isFloorZero && (
         <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <extrudeGeometry args={[shape, extrudeSettings]} />
@@ -287,8 +374,6 @@ function PrismMesh({ baseType, dimA, dimB, dimC, height, mode }: { baseType: Bas
           <Edges threshold={15} color={mode === 'continuous' ? "#0284c7" : "#1e3a8a"} />
         </mesh>
       )}
-      
-      {/* Base plane (Floor 0) */}
       <mesh position={[0, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <shapeGeometry args={[shape]} />
         <meshBasicMaterial color={isFloorZero ? "#3b82f6" : "#1e3a8a"} transparent opacity={isFloorZero ? 0.8 : 0.3} side={THREE.DoubleSide} />
