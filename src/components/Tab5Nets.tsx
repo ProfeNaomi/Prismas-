@@ -274,7 +274,7 @@ function IsoscelesFace({ base, height, color, isBase = false, children }: { base
 function PyramidFlap({ edgeIndex, width, foldAngle, children }: { edgeIndex: number, width: number, foldAngle: number, children: React.ReactNode }) {
   if (edgeIndex === 0) {
     return (
-      <group position={[width, 0, 0]} rotation={[foldAngle, 0, 0]}>
+      <group position={[width, 0, 0]} rotation={[-foldAngle, 0, 0]}>
         <group rotation={[0, 0, Math.PI]}>
           {children}
         </group>
@@ -282,7 +282,7 @@ function PyramidFlap({ edgeIndex, width, foldAngle, children }: { edgeIndex: num
     );
   } else if (edgeIndex === 1) {
     return (
-      <group position={[width, width, 0]} rotation={[0, -foldAngle, 0]}>
+      <group position={[width, width, 0]} rotation={[0, foldAngle, 0]}>
         <group rotation={[0, 0, -Math.PI/2]}>
           {children}
         </group>
@@ -290,13 +290,13 @@ function PyramidFlap({ edgeIndex, width, foldAngle, children }: { edgeIndex: num
     );
   } else if (edgeIndex === 2) {
     return (
-      <group position={[0, width, 0]} rotation={[-foldAngle, 0, 0]}>
+      <group position={[0, width, 0]} rotation={[foldAngle, 0, 0]}>
         {children}
       </group>
     );
   } else if (edgeIndex === 3) {
     return (
-      <group position={[0, 0, 0]} rotation={[0, foldAngle, 0]}>
+      <group position={[0, 0, 0]} rotation={[0, -foldAngle, 0]}>
         <group rotation={[0, 0, Math.PI/2]}>
           {children}
         </group>
@@ -538,7 +538,7 @@ function AnimatedNet({ baseType, dimA, dimB, height, progress }: { baseType: Bas
       
       triangles.push(
         <group key={i} rotation={[0, 0, angle]}>
-          <group position={[0, d, 0]} rotation={[-foldAngle, 0, 0]}>
+          <group position={[0, d, 0]} rotation={[foldAngle, 0, 0]}>
             <group position={[-baseL / 2, 0, 0]}>
               <IsoscelesFace base={baseL} height={sHeight} color={lateralColor} />
             </group>

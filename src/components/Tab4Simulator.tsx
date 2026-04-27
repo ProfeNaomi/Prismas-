@@ -60,7 +60,6 @@ export default function Tab4Simulator() {
                     <option value="square">Prisma Cuadrado</option>
                     <option value="rectangle">Prisma Rectangular</option>
                     <option value="triangle">Prisma Triangular</option>
-                    <option value="trapezoid">Prisma Trapezoidal</option>
                   </optgroup>
                   <optgroup label="Cuerpos Redondos">
                     <option value="cylinder">Cilindro</option>
@@ -107,22 +106,6 @@ export default function Tab4Simulator() {
                     <div>
                       <label className="block text-xs font-medium text-slate-500 mb-1">Altura del triángulo (m)</label>
                       <input type="number" min="1" max="100" value={dimB} onChange={e => setDimB(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
-                    </div>
-                  </>
-                )}
-                {baseType === 'trapezoid' && (
-                  <>
-                    <div>
-                      <label className="block text-xs font-medium text-slate-500 mb-1">Base Mayor (m)</label>
-                      <input type="number" min="1" max="100" value={dimA} onChange={e => setDimA(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-slate-500 mb-1">Base Menor (m)</label>
-                      <input type="number" min="1" max="100" value={dimB} onChange={e => setDimB(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-slate-500 mb-1">Altura del trapecio (m)</label>
-                      <input type="number" min="1" max="100" value={dimC} onChange={e => setDimC(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
                     </div>
                   </>
                 )}
@@ -219,8 +202,35 @@ function PrismMesh({ baseType, dimA, dimB, dimC, height, mode }: { baseType: Bas
   const isFloorZero = height === 0;
   
   const material = mode === 'continuous' 
-    ? <meshPhysicalMaterial color="#0ea5e9" transparent opacity={0.7} roughness={0.1} transmission={0.9} thickness={1} />
+    ? <meshStandardMaterial color="#00BFFF" transparent opacity={0.65} roughness={0.1} metalness={0.1} side={THREE.DoubleSide} />
     : <meshStandardMaterial color="#3b82f6" roughness={0.2} metalness={0.1} />;
+
+  // Create a grid texture for the discrete cylinder's base to show "cuadraditos"
+  const gridTexture = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 128;
+    const context = canvas.getContext('2d');
+    if (context) {
+      context.fillStyle = '#3b82f6';
+      context.fillRect(0, 0, 128, 128);
+      context.strokeStyle = '#1e3a8a';
+      context.lineWidth = 4;
+      context.strokeRect(0, 0, 128, 128);
+    }
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    return tex;
+  }, []);
+
+  useMemo(() => {
+    gridTexture.repeat.set(dimA * 2, dimA * 2);
+    gridTexture.needsUpdate = true;
+  }, [gridTexture, dimA]);
+
+  const discreteMaterial = <meshStandardMaterial map={gridTexture} roughness={0.2} metalness={0.1} />;
+
 
   // Cylinders, Cones, Pyramids using standard Geometries
   if (baseType === 'cylinder') {
@@ -229,7 +239,7 @@ function PrismMesh({ baseType, dimA, dimB, dimC, height, mode }: { baseType: Bas
         {!isFloorZero && (
           <mesh position={[0, height/2 + 0.01, 0]}>
             <cylinderGeometry args={[dimA, dimA, height, 32]} />
-            {material}
+            {mode === 'discrete' ? discreteMaterial : material}
             <Edges threshold={15} color={mode === 'continuous' ? "#0284c7" : "#1e3a8a"} />
           </mesh>
         )}
@@ -347,15 +357,6 @@ function PrismMesh({ baseType, dimA, dimB, dimC, height, mode }: { baseType: Bas
       s.lineTo(w, -h/3);
       s.lineTo(0, h * 2/3);
       s.lineTo(-w, -h/3);
-    } else if (baseType === 'trapezoid') {
-      const B = dimA / 2;
-      const b = dimB / 2;
-      const h = dimC / 2;
-      s.moveTo(-B, -h);
-      s.lineTo(B, -h);
-      s.lineTo(b, h);
-      s.lineTo(-b, h);
-      s.lineTo(-B, -h);
     }
     return s;
   }, [baseType, dimA, dimB, dimC]);

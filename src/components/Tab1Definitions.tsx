@@ -129,6 +129,7 @@ export default function Tab1Definitions() {
                   </p>
                   <div className="space-y-2 mt-auto">
                     <div className="px-3 py-1 bg-rose-50 text-rose-700 rounded-lg text-sm font-medium text-center">V = π · r² · h</div>
+                    <div className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium text-center">Área = 2·π·r·h + 2·π·r²</div>
                     <div className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium text-center">Generatriz = Altura</div>
                   </div>
                   <Cylinder className="w-12 h-12 text-slate-300 mx-auto mt-4" />
@@ -143,6 +144,7 @@ export default function Tab1Definitions() {
                   </p>
                   <div className="space-y-2 mt-auto">
                     <div className="px-3 py-1 bg-rose-50 text-rose-700 rounded-lg text-sm font-medium text-center">V = (π · r² · h) / 3</div>
+                    <div className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium text-center">Área = π·r·g + π·r²</div>
                     <div className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium text-center">g² = r² + h² (Pitágoras)</div>
                   </div>
                   <Triangle className="w-12 h-12 text-slate-300 mx-auto mt-4" />

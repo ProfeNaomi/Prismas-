@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from './ui/Card';
-import { CheckCircle, XCircle, ArrowRight, Trophy, Sparkles, Brain } from 'lucide-react';
+import { CheckCircle, XCircle, ArrowRight, Trophy, Sparkles, Brain, Lightbulb } from 'lucide-react';
 
 type QuestionType = 'identification' | 'volume' | 'area' | 'word_problem';
 
