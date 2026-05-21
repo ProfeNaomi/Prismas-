@@ -279,7 +279,7 @@ export default function Formula({ tex, className = '' }: FormulaProps) {
     <span
       className={`inline-flex items-center gap-[2px] font-medium text-slate-800 dark:text-slate-200 text-lg md:text-xl font-serif select-none ${className}`}
     >
-      {parseLaTeX(tex)}
+      {parseLaTeX(tempStr)}
     </span>
   );
 }

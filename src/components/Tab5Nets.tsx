@@ -483,7 +483,7 @@ function AnimatedNet({
       
       flaps.push(
         <group key={i} position={[x, y, 0]} rotation={[0, 0, angle - Math.PI / 2]}>
-          <group rotation={[-foldAngle, 0, 0]}>
+          <group rotation={[foldAngle, 0, 0]}>
             <group position={[-s / 2, 0, 0]}>
               <IsoscelesFace base={s} height={slantHeight} color={lateralColor} />
             </group>
@@ -685,7 +685,7 @@ function AnimatedNet({
       
       triangles.push(
         <group key={i} rotation={[0, 0, angle]}>
-          <group position={[0, d, 0]} rotation={[-foldAngle, 0, 0]}>
+          <group position={[0, d, 0]} rotation={[foldAngle, 0, 0]}>
             <group position={[-baseL / 2, 0, 0]}>
               <IsoscelesFace base={baseL} height={sHeight} color={lateralColor} />
             </group>
