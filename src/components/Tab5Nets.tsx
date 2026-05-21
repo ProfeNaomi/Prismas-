@@ -26,10 +26,64 @@ export default function Tab5Nets() {
   const [dimB, setDimB] = useState<string>('3'); // Rect depth
   const [height, setHeight] = useState<string>('5'); // Body height
 
+  // Helper to determine if shape is a continuous/fluid round body
+  const isRoundBody = (type: BaseType) => type === 'cylinder' || type === 'cone';
+
   // Strict Sanitization to protect WebGL
-  const safeA = useMemo(() => Math.max(0.5, parseFloat(dimA) || 1), [dimA]);
-  const safeB = useMemo(() => Math.max(0.5, parseFloat(dimB) || 1), [dimB]);
-  const safeH = useMemo(() => Math.max(0.5, parseFloat(height) || 1), [height]);
+  const safeA = useMemo(() => {
+    const val = parseFloat(dimA) || 1;
+    return !isRoundBody(baseType) ? Math.max(1, Math.round(val)) : Math.max(0.5, val);
+  }, [dimA, baseType]);
+
+  const safeB = useMemo(() => {
+    const val = parseFloat(dimB) || 1;
+    return !isRoundBody(baseType) ? Math.max(1, Math.round(val)) : Math.max(0.5, val);
+  }, [dimB, baseType]);
+
+  const safeH = useMemo(() => {
+    const val = parseFloat(height) || 1;
+    return !isRoundBody(baseType) ? Math.max(1, Math.round(val)) : Math.max(0.5, val);
+  }, [height, baseType]);
+
+  // Dimension Change Handlers that enforce integers for non-round bases
+  const handleDimAChange = (val: string) => {
+    if (!isRoundBody(baseType)) {
+      const parsed = parseFloat(val);
+      if (isNaN(parsed)) {
+        setDimA('');
+      } else {
+        setDimA(Math.round(parsed).toString());
+      }
+    } else {
+      setDimA(val);
+    }
+  };
+
+  const handleDimBChange = (val: string) => {
+    if (!isRoundBody(baseType)) {
+      const parsed = parseFloat(val);
+      if (isNaN(parsed)) {
+        setDimB('');
+      } else {
+        setDimB(Math.round(parsed).toString());
+      }
+    } else {
+      setDimB(val);
+    }
+  };
+
+  const handleHeightChange = (val: string) => {
+    if (!isRoundBody(baseType)) {
+      const parsed = parseFloat(val);
+      if (isNaN(parsed)) {
+        setHeight('');
+      } else {
+        setHeight(Math.round(parsed).toString());
+      }
+    } else {
+      setHeight(val);
+    }
+  };
 
   // Animation logic
   useEffect(() => {
@@ -106,8 +160,8 @@ export default function Tab5Nets() {
                       max="15" 
                       step="0.1" 
                       value={dimA} 
-                      onChange={e => setDimA(e.target.value)} 
-                      className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold" 
+                      onChange={e => handleDimAChange(e.target.value)} 
+                      className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" 
                     />
                   </div>
                 )}
@@ -116,12 +170,12 @@ export default function Tab5Nets() {
                     <label className="block text-xs font-bold text-slate-500 mb-1">Lado basal s (m)</label>
                     <input 
                       type="number" 
-                      min="0.5" 
+                      min="1" 
                       max="15" 
-                      step="0.1" 
+                      step="1" 
                       value={dimA} 
-                      onChange={e => setDimA(e.target.value)} 
-                      className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold" 
+                      onChange={e => handleDimAChange(e.target.value)} 
+                      className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" 
                     />
                   </div>
                 )}
@@ -131,24 +185,24 @@ export default function Tab5Nets() {
                       <label className="block text-xs font-bold text-slate-500 mb-1">Ancho basal a (m)</label>
                       <input 
                         type="number" 
-                        min="0.5" 
+                        min="1" 
                         max="15" 
-                        step="0.1" 
+                        step="1" 
                         value={dimA} 
-                        onChange={e => setDimA(e.target.value)} 
-                        className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold" 
+                        onChange={e => handleDimAChange(e.target.value)} 
+                        className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" 
                       />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-500 mb-1">Largo basal b (m)</label>
                       <input 
                         type="number" 
-                        min="0.5" 
+                        min="1" 
                         max="15" 
-                        step="0.1" 
+                        step="1" 
                         value={dimB} 
-                        onChange={e => setDimB(e.target.value)} 
-                        className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold" 
+                        onChange={e => handleDimBChange(e.target.value)} 
+                        className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" 
                       />
                     </div>
                   </>
@@ -158,12 +212,12 @@ export default function Tab5Nets() {
                     <label className="block text-xs font-bold text-slate-500 mb-1">Lado del Triángulo s (m)</label>
                     <input 
                       type="number" 
-                      min="0.5" 
+                      min="1" 
                       max="15" 
-                      step="0.1" 
+                      step="1" 
                       value={dimA} 
-                      onChange={e => setDimA(e.target.value)} 
-                      className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold" 
+                      onChange={e => handleDimAChange(e.target.value)} 
+                      className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" 
                     />
                   </div>
                 )}
@@ -173,10 +227,10 @@ export default function Tab5Nets() {
                     type="number" 
                     min="0.5" 
                     max="15" 
-                    step="0.1" 
+                    step={isRoundBody(baseType) ? "0.1" : "1"} 
                     value={height} 
-                    onChange={e => setHeight(e.target.value)} 
-                    className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold" 
+                    onChange={e => handleHeightChange(e.target.value)} 
+                    className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" 
                   />
                 </div>
               </div>
@@ -355,41 +409,6 @@ function getRegularPolygonShape(sides: number, radius: number) {
   return shape;
 }
 
-function PyramidFlap({ edgeIndex, width, foldAngle, children }: { edgeIndex: number, width: number, foldAngle: number, children: React.ReactNode }) {
-  if (edgeIndex === 0) {
-    return (
-      <group position={[width, 0, 0]} rotation={[-foldAngle, 0, 0]}>
-        <group rotation={[0, 0, Math.PI]}>
-          {children}
-        </group>
-      </group>
-    );
-  } else if (edgeIndex === 1) {
-    return (
-      <group position={[width, width, 0]} rotation={[0, foldAngle, 0]}>
-        <group rotation={[0, 0, -Math.PI/2]}>
-          {children}
-        </group>
-      </group>
-    );
-  } else if (edgeIndex === 2) {
-    return (
-      <group position={[0, width, 0]} rotation={[foldAngle, 0, 0]}>
-        {children}
-      </group>
-    );
-  } else if (edgeIndex === 3) {
-    return (
-      <group position={[0, 0, 0]} rotation={[0, -foldAngle, 0]}>
-        <group rotation={[0, 0, Math.PI/2]}>
-          {children}
-        </group>
-      </group>
-    );
-  }
-  return null;
-}
-
 // Computes 3D net structures
 function AnimatedNet({ 
   baseType, 
@@ -407,6 +426,7 @@ function AnimatedNet({
   const lateralColor = "#0284c7"; // Premium Blue (Sky)
   const baseColor = "#d97706"; // Premium Amber
 
+  // 1. offset X useMemo (unconditional at top)
   const centerOffsetX = useMemo(() => {
     if (baseType === 'square') return -(dimA * 2); 
     if (baseType === 'rectangle') return -(dimA + dimB); 
@@ -417,11 +437,25 @@ function AnimatedNet({
     return 0;
   }, [baseType, dimA, dimB]);
 
+  // 2. offset Y useMemo (unconditional at top)
   const centerOffsetY = useMemo(() => {
     if (baseType.startsWith('pyramid_')) return 0;
     if (baseType === 'cone') return 0;
     return -height / 2;
   }, [baseType, height]);
+
+  // 3. Regular polygon baseShape useMemo (declared unconditionally at top)
+  const pyramidBaseShape = useMemo(() => {
+    let sides = 4;
+    if (baseType === 'pyramid_triangular') sides = 3;
+    else if (baseType === 'pyramid_square') sides = 4;
+    else if (baseType === 'pyramid_pentagonal') sides = 5;
+    else if (baseType === 'pyramid_hexagonal') sides = 6;
+
+    const s = dimA;
+    const circumRadius = s / (2 * Math.sin(Math.PI / sides));
+    return getRegularPolygonShape(sides, circumRadius);
+  }, [baseType, dimA]);
 
   // General N-gonal Pyramid Net Folding
   if (baseType.startsWith('pyramid_')) {
@@ -439,8 +473,6 @@ function AnimatedNet({
     const slantHeight = Math.sqrt(h * h + apothem * apothem);
     const targetAngle = Math.atan2(h, apothem);
     const foldAngle = progress * targetAngle;
-
-    const baseShape = useMemo(() => getRegularPolygonShape(sides, circumRadius), [sides, circumRadius]);
     
     const flaps = [];
     const angleOffset = sides % 2 === 0 ? Math.PI / sides : 0;
@@ -451,7 +483,6 @@ function AnimatedNet({
       
       flaps.push(
         <group key={i} position={[x, y, 0]} rotation={[0, 0, angle - Math.PI / 2]}>
-          {/* Rotate around local X-axis (negative angle folds it upward in this coordinate layout) */}
           <group rotation={[-foldAngle, 0, 0]}>
             <group position={[-s / 2, 0, 0]}>
               <IsoscelesFace base={s} height={slantHeight} color={lateralColor} />
@@ -464,7 +495,7 @@ function AnimatedNet({
     return (
       <group position={[0, 0, 0]}>
         <mesh receiveShadow castShadow>
-          <shapeGeometry args={[baseShape]} />
+          <shapeGeometry args={[pyramidBaseShape]} />
           <meshStandardMaterial color={baseColor} side={THREE.DoubleSide} roughness={0.3} metalness={0.1} transparent opacity={0.9} />
           <Edges color="#ffffff" />
         </mesh>
@@ -641,7 +672,6 @@ function AnimatedNet({
     const h = height;
     const sHeight = Math.sqrt(h * h + r * r);
     const targetAngle = Math.atan2(h, r);
-    // Corrected to fold UPWARD to join correctly at the apex
     const foldAngle = progress * targetAngle;
 
     const N = 36;
@@ -655,7 +685,6 @@ function AnimatedNet({
       
       triangles.push(
         <group key={i} rotation={[0, 0, angle]}>
-          {/* Negated X rotation folds it upward into positive Z space */}
           <group position={[0, d, 0]} rotation={[-foldAngle, 0, 0]}>
             <group position={[-baseL / 2, 0, 0]}>
               <IsoscelesFace base={baseL} height={sHeight} color={lateralColor} />
