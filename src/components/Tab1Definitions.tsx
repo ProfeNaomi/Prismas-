@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from './ui/Card';
 import { Box, Cylinder, Triangle, Circle, Hexagon, Component } from 'lucide-react';
+import Formula from './Formula';
 
 export default function Tab1Definitions() {
   return (
@@ -76,7 +77,9 @@ export default function Tab1Definitions() {
                     Tienen dos bases poligonales iguales y paralelas, unidas por caras laterales que son paralelogramos (generalmente rectángulos).
                   </p>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">Volumen: V = Área base × h</span>
+                    <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium flex items-center gap-1">
+                      Volumen: <Formula tex="V = A_{base} \cdot h" />
+                    </span>
                   </div>
                   <div className="flex items-center gap-4 text-slate-500">
                     <Box className="w-10 h-10" />
@@ -92,7 +95,9 @@ export default function Tab1Definitions() {
                     Tienen una sola base poligonal y caras laterales que son triángulos que se unen en un punto común llamado <strong>cúspide</strong> o vértice superior.
                   </p>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    <span className="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-sm font-medium">Volumen: V = (Área base × h) / 3</span>
+                    <span className="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-sm font-medium flex items-center gap-1">
+                      Volumen: <Formula tex="V = (A_{base} \cdot h) / 3" />
+                    </span>
                   </div>
                   <div className="flex items-center gap-4 text-slate-500">
                     <Triangle className="w-10 h-10" />
@@ -108,8 +113,8 @@ export default function Tab1Definitions() {
               <p className="text-indigo-800 mb-3">
                 Para cualquier poliedro convexo, existe una relación constante entre el número de caras (C), vértices (V) y aristas (A):
               </p>
-              <div className="text-2xl font-mono text-center font-bold text-indigo-700 bg-white py-3 rounded-lg border border-indigo-200">
-                C + V = A + 2
+              <div className="text-2xl font-mono text-center font-bold text-indigo-700 bg-white py-3 rounded-lg border border-indigo-200 flex justify-center items-center">
+                <Formula tex="C + V = A + 2" className="text-2xl" />
               </div>
             </div>
           </div>
@@ -128,9 +133,15 @@ export default function Tab1Definitions() {
                     Generado al girar un rectángulo. Tiene dos bases circulares iguales y paralelas y una superficie lateral curva.
                   </p>
                   <div className="space-y-2 mt-auto">
-                    <div className="px-3 py-1 bg-rose-50 text-rose-700 rounded-lg text-sm font-medium text-center">V = π · r² · h</div>
-                    <div className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium text-center">Área = 2·π·r·h + 2·π·r²</div>
-                    <div className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium text-center">Generatriz = Altura</div>
+                    <div className="px-3 py-1 bg-rose-50 text-rose-700 rounded-lg text-sm font-medium text-center flex justify-center items-center gap-1">
+                      <span>Volumen:</span> <Formula tex="V = \pi \cdot r^2 \cdot h" />
+                    </div>
+                    <div className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium text-center flex justify-center items-center gap-1">
+                      <span>Área:</span> <Formula tex="A = 2 \cdot \pi \cdot r \cdot h + 2 \cdot \pi \cdot r^2" />
+                    </div>
+                    <div className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium text-center flex justify-center items-center gap-1">
+                      <span>Generatriz = Altura</span>
+                    </div>
                   </div>
                   <Cylinder className="w-12 h-12 text-slate-300 mx-auto mt-4" />
                 </CardContent>
@@ -143,9 +154,15 @@ export default function Tab1Definitions() {
                     Generado al girar un triángulo rectángulo. Tiene una base circular y una superficie lateral curva que termina en una cúspide.
                   </p>
                   <div className="space-y-2 mt-auto">
-                    <div className="px-3 py-1 bg-rose-50 text-rose-700 rounded-lg text-sm font-medium text-center">V = (π · r² · h) / 3</div>
-                    <div className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium text-center">Área = π·r·g + π·r²</div>
-                    <div className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium text-center">g² = r² + h² (Pitágoras)</div>
+                    <div className="px-3 py-1 bg-rose-50 text-rose-700 rounded-lg text-sm font-medium text-center flex justify-center items-center gap-1">
+                      <span>Volumen:</span> <Formula tex="V = (\pi \cdot r^2 \cdot h) / 3" />
+                    </div>
+                    <div className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium text-center flex justify-center items-center gap-1">
+                      <span>Área:</span> <Formula tex="A = \pi \cdot r \cdot g + \pi \cdot r^2" />
+                    </div>
+                    <div className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium text-center flex justify-center items-center gap-1">
+                      <Formula tex="g^2 = r^2 + h^2" /> (Pitágoras)
+                    </div>
                   </div>
                   <Triangle className="w-12 h-12 text-slate-300 mx-auto mt-4" />
                 </CardContent>
@@ -158,8 +175,12 @@ export default function Tab1Definitions() {
                     Generada al girar un semicírculo. Todos los puntos de su superficie están a la misma distancia del centro (radio).
                   </p>
                   <div className="space-y-2 mt-auto">
-                    <div className="px-3 py-1 bg-rose-50 text-rose-700 rounded-lg text-sm font-medium text-center">V = (4/3) · π · r³</div>
-                    <div className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium text-center">Área = 4 · π · r²</div>
+                    <div className="px-3 py-1 bg-rose-50 text-rose-700 rounded-lg text-sm font-medium text-center flex justify-center items-center gap-1">
+                      <span>Volumen:</span> <Formula tex="V = (4/3) \cdot \pi \cdot r^3" />
+                    </div>
+                    <div className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium text-center flex justify-center items-center gap-1">
+                      <span>Área:</span> <Formula tex="A = 4 \cdot \pi \cdot r^2" />
+                    </div>
                   </div>
                   <Circle className="w-12 h-12 text-slate-300 mx-auto mt-4" />
                 </CardContent>
