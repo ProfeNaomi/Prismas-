@@ -4,9 +4,11 @@
  */
 
 import { useState } from 'react';
-import { BookOpen, Cuboid, Layers, PenTool } from 'lucide-react';
+import { BookOpen, Cuboid, Layers, PenTool, Triangle, Box } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Tab1Definitions from './components/Tab1Definitions';
+import Tab2Figures from './components/Tab2Figures';
+import Tab3Prisms from './components/Tab3Prisms';
 import Tab4Simulator from './components/Tab4Simulator';
 import Tab5Nets from './components/Tab5Nets';
 import Tab6Exercises from './components/Tab6Exercises';
@@ -15,10 +17,12 @@ export default function App() {
   const [activeTab, setActiveTab] = useState(0);
 
   const tabs = [
-    { id: 0, label: 'Teoría', icon: BookOpen, component: Tab1Definitions },
-    { id: 1, label: 'Simulador 3D', icon: Cuboid, component: Tab4Simulator },
-    { id: 2, label: 'Mallas 3D', icon: Layers, component: Tab5Nets },
-    { id: 3, label: 'Ejercicios', icon: PenTool, component: Tab6Exercises },
+    { id: 0, label: 'Cuerpos 3D', icon: BookOpen, component: Tab1Definitions },
+    { id: 1, label: 'Figuras 2D', icon: Triangle, component: Tab2Figures },
+    { id: 2, label: 'Prismas 3D', icon: Box, component: Tab3Prisms },
+    { id: 3, label: 'Simulador 3D', icon: Cuboid, component: Tab4Simulator },
+    { id: 4, label: 'Mallas 3D', icon: Layers, component: Tab5Nets },
+    { id: 5, label: 'Ejercicios', icon: PenTool, component: Tab6Exercises },
   ];
 
   const ActiveComponent = tabs[activeTab].component;

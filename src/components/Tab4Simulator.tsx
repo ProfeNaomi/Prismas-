@@ -10,7 +10,7 @@ type Mode = 'discrete' | 'continuous';
 export default function Tab4Simulator() {
   const [baseType, setBaseType] = useState<BaseType>('square');
   const [mode, setMode] = useState<Mode>('discrete');
-  const [height, setHeight] = useState<number>(0);
+  const [height, setHeight] = useState<number>(5);
   
   // Dimensions
   const [dimA, setDimA] = useState<number>(4); // Square side, Rect width, Tri base, Trap base1, Cylinder/Cone Radius
@@ -54,12 +54,20 @@ export default function Tab4Simulator() {
                 <select 
                   className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={baseType}
-                  onChange={(e) => setBaseType(e.target.value as BaseType)}
+                  onChange={(e) => {
+                    const newType = e.target.value as BaseType;
+                    setBaseType(newType);
+                    // Force mode to continuous for non-block shapes to avoid invalid mode selection
+                    if (newType !== 'square' && newType !== 'rectangle') {
+                      setMode('continuous');
+                    }
+                  }}
                 >
                   <optgroup label="Prismas">
                     <option value="square">Prisma Cuadrado</option>
                     <option value="rectangle">Prisma Rectangular</option>
                     <option value="triangle">Prisma Triangular</option>
+                    <option value="trapezoid">Prisma Trapezoidal</option>
                   </optgroup>
                   <optgroup label="Cuerpos Redondos">
                     <option value="cylinder">Cilindro</option>
@@ -109,6 +117,22 @@ export default function Tab4Simulator() {
                     </div>
                   </>
                 )}
+                {baseType === 'trapezoid' && (
+                  <>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-500 mb-1">Base Mayor B (m)</label>
+                      <input type="number" min="1" max="100" value={dimA} onChange={e => setDimA(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-500 mb-1">Base Menor b (m)</label>
+                      <input type="number" min="1" max="100" value={dimB} onChange={e => setDimB(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-500 mb-1">Altura del trapecio (m)</label>
+                      <input type="number" min="1" max="100" value={dimC} onChange={e => setDimC(Number(e.target.value))} className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm" />
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Mode Toggle */}
@@ -116,18 +140,30 @@ export default function Tab4Simulator() {
                 <label className="block text-sm font-medium text-slate-700 mb-2">Modo de Crecimiento</label>
                 <div className="flex bg-slate-100 p-1 rounded-lg">
                   <button
-                    className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-colors ${mode === 'discrete' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                    disabled={baseType !== 'square' && baseType !== 'rectangle'}
+                    className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                      mode === 'discrete' 
+                        ? 'bg-white text-blue-600 shadow-sm' 
+                        : 'text-slate-500 hover:text-slate-700 disabled:opacity-30'
+                    }`}
                     onClick={() => { setMode('discrete'); setHeight(Math.floor(height)); }}
                   >
                     Discreto (Pisos)
                   </button>
                   <button
-                    className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-colors ${mode === 'continuous' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                      mode === 'continuous' 
+                        ? 'bg-white text-blue-600 shadow-sm' 
+                        : 'text-slate-500 hover:text-slate-700'
+                    }`}
                     onClick={() => setMode('continuous')}
                   >
                     Continuo (Agua)
                   </button>
                 </div>
+                {baseType !== 'square' && baseType !== 'rectangle' && (
+                  <p className="text-[10px] text-slate-400 mt-1">Modo discreto solo disponible para prismas rectos.</p>
+                )}
               </div>
 
               {/* Height Slider */}
@@ -141,7 +177,7 @@ export default function Tab4Simulator() {
                 <input 
                   type="range" 
                   min="0" 
-                  max="100" 
+                  max="15" 
                   step={mode === 'discrete' ? 1 : 0.1}
                   value={height} 
                   onChange={e => setHeight(Number(e.target.value))} 
@@ -225,9 +261,9 @@ function PrismMesh({ baseType, dimA, dimB, dimC, height, mode }: { baseType: Bas
   }, []);
 
   useMemo(() => {
-    gridTexture.repeat.set(dimA * 2, dimA * 2);
+    gridTexture.repeat.set(Math.round(2 * Math.PI * dimA), Math.max(1, Math.round(height)));
     gridTexture.needsUpdate = true;
-  }, [gridTexture, dimA]);
+  }, [gridTexture, dimA, height]);
 
   const discreteMaterial = <meshStandardMaterial map={gridTexture} roughness={0.2} metalness={0.1} />;
 
@@ -357,6 +393,15 @@ function PrismMesh({ baseType, dimA, dimB, dimC, height, mode }: { baseType: Bas
       s.lineTo(w, -h/3);
       s.lineTo(0, h * 2/3);
       s.lineTo(-w, -h/3);
+    } else if (baseType === 'trapezoid') {
+      const B = dimA; // base mayor
+      const b = dimB; // base menor
+      const h = dimC; // altura del trapecio
+      s.moveTo(-B/2, -h/2);
+      s.lineTo(B/2, -h/2);
+      s.lineTo(b/2, h/2);
+      s.lineTo(-b/2, h/2);
+      s.lineTo(-B/2, -h/2);
     }
     return s;
   }, [baseType, dimA, dimB, dimC]);
